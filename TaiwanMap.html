@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <!--Open Street Map 匯入 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="./fontawesome/css/all.min.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="./jquery-3.6.0.min.js"></script>
+     <!--Open Street Map 匯入 -->
+
+    <script src='./temperatureMap.js'></script>
+    <style>
+
+   html, body{
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+            }
+            #map{
+                width: 100%;
+                height: 100%;
+            }
+            .Navbar
+            {
+
+            /*border: red;*/
+            width: 60px;
+            height: 500px;
+            position: fixed;
+            top:10%;
+            right: 1px;
+            border-style: none;
+            z-index:100;
+            border-radius: 30px 30px 30px 30px;
+            background-color: rgba(68,65,65,0.84);
+            }
+
+            #temptureViewer
+            {
+            width: 400px;
+            height: 20px;
+            position: fixed;
+            top:90%;
+            left: 70%;
+            border-style: none;
+            z-index:100;
+            border-radius: 30px 30px 30px 30px;
+            background: linear-gradient(to right,
+            rgb(149, 137, 211),
+            rgb(149, 137, 211),
+            rgb(149, 137, 211),
+            rgb(149, 137, 211),
+            rgb(150, 209, 216),
+            rgb(129, 204, 197),
+            rgb(103, 180, 186),
+            rgb(95, 143, 197),
+            rgb(80, 140, 62),
+            rgb(121, 146, 28),
+            rgb(171, 161, 14),
+            rgb(223, 177, 6),
+            rgb(243, 150, 6),
+            rgb(236, 95, 21),
+            rgb(190, 65, 18),
+            rgb(138, 43, 10),
+            rgb(138, 43, 10));
+            box-shadow:0 0 4px 0 black;  /*陰影**/
+            }
+
+            .TemptrueViewerspen
+            {
+
+            width: 12%;
+            height: 30px;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            position: relative;
+            color: white;
+            font-size: 16px;
+
+
+            }
+            .Narbtn
+            {
+            border:  rgba(68,65,65,0.84);
+            width: 50px;
+            height: 50px;
+            position: fixed;
+            border-style: none;
+            z-index:101;
+            border-radius: 50px 50px 50px 50px;
+            /*background-color: rgba(68,65,65,0.84);*/
+            color: white;
+            margin: 0 auto;
+            position: relative;
+            text-align:center;
+            box-shadow: "";
+            }
+
+        /*    .Narbtn:hover
+            {
+            border: green;
+            border-style: solid;
+            box-shadow:
+            rgba(0, 0, 0, 0.06) 0px 2px 1px,
+            rgba(0, 0, 0, 0.09) 0px 4px 2px,
+            rgba(0, 0, 0, 0.09) 0px 8px 4px,
+            rgba(0, 0, 0, 0.09) 0px 16px 8px,
+            rgba(0, 0, 0, 0.09) 0px 32px 16px;
+            }
+*/
+        .Narbtntext
+        {
+          position: absolute;
+          color: white;
+          right:70px;
+          width: 50px;
+          height:25px;
+         border-radius: 20px 20px 20px 20px;
+         text-align: center;
+        }
+         .Narbtntext:hover
+        {
+        background-color: rgba(68,65,65,1);
+        }
+
+        .Tempturebutton
+        {
+            /*background-color: rgb(216, 75, 1);*/
+            width: 50px;
+            height:20px;;
+            position:fixed;
+            z-index: 100;
+            border-radius:1em;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+        }
+
+     .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+            background-color: rgba(68,65,65) !important;
+            color: white !important;
+            border-radius: 20px 20px 20px 20px !important;
+            right:5px;
+        }
+        .leaflet-right{
+        right: 5px !important ;
+        }
+        .leaflet-bar{
+ border:none !important;
+        }
+</style>
+
+</head>
+<body>
+<canvas id='cns' style="z-index:100; position: fixed; width:100%;height: 100%;pointer-events:none;"></canvas>
+<div id="map" style="z-index: 99"></div>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+
+<!-- NavBar外觀 -->
+<div class="Navbar">
+
+<div>
+ <!-- 按鈕旁文字 -->
+    <div id="text_tempture" class="Narbtntext" >
+    溫度
+    </div>
+    <!-- 按鈕旁文字 -->
+      <!-- 溫度按鈕(+icon) -->
+    <div id="btn_tempture" class="Narbtn">
+        <i style="padding: 10px;" class="fas fa-thermometer-half fa-2x"></i>
+    </div>
+     <!-- 溫度按鈕(+icon) -->
+</div>
+
+
+<div>
+ <!-- 按鈕旁文字 -->
+    <div id="text_Air" class="Narbtntext" >
+    空氣
+    </div>
+    <!-- 按鈕旁文字 -->
+      <!-- 溫度按鈕(+icon) -->
+    <div id="btn_Air" class="Narbtn" >
+        <i style="padding: 5px; color: white;" class="fas fa-lungs fa-2x"></i>
+    </div>
+     <!-- 溫度按鈕(+icon) -->
+</div>
+
+
+<div>
+ <!-- 按鈕旁文字 -->
+    <div id="text_DropDown" class="Narbtntext" >
+    下拉
+    </div>
+    <!-- 按鈕旁文字 -->
+      <!-- 溫度按鈕(+icon) -->
+    <div id="btn_DropDown" class="Narbtn" >
+        <i style="padding: 5px; color: white;" class="fas fa-cloud-sun fa-2x"></i>
+    </div>
+     <!-- 溫度按鈕(+icon) -->
+</div>
+
+
+</div>
+
+<div id="temptureViewer">
+    <table style="width:100%">
+        <tbody>
+            <tr>
+                <td><span class="TemptrueViewerspen">°C</span></td>
+                <td><span class="TemptrueViewerspen">-20</span></td>
+                <td><span class="TemptrueViewerspen">-10</span></td>
+                <td><span class="TemptrueViewerspen">0</span></td>
+                <td><span class="TemptrueViewerspen">10</span></td>
+                <td><span class="TemptrueViewerspen">20</span></td>
+                <td><span class="TemptrueViewerspen">30</span></td>
+                <td><span class="TemptrueViewerspen">40</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+</body>
+</html>
+
+
+   <script>
+	var Mymap;
+    var ws;
+    var Datas=null;
+    var MapLevelNow=8;
+    var NowLatlng=function()
+    {
+    this.MaxLat;
+    this.MinLat;
+    this.MaxnLng;
+    this.MinLng;
+    };
+    NowLatlng.setLatlng = function (MaxLat,MinLat,MaxLng,MinLng)
+    {
+
+    this.MaxLat = MaxLat;
+
+    this.MinLat= MinLat;
+    this.MaxLng= MaxLng;
+    this.MinLng= MinLng;
+
+    };
+
+
+ //取得邊緣經緯度
+            var NowBounds = L.Control.extend({
+                onAdd: function(map) {
+                    var $label = L.DomUtil.create('label');
+                    $label.style.width = '320px';
+                    $label.style.color = 'white';
+                    $label.style.background = '#A0A0A0';
+
+                    var _bounds = map.getBounds();
+                    // 緯度
+                    $label.innerText =
+                        '東北: ('+ _bounds._northEast.lng +','+ _bounds._northEast.lat +')(經, 緯)\n'
+                        + '西南: ('+ _bounds._southWest.lng +','+ _bounds._southWest.lat +')(經, 緯)';
+                        NowLatlng.setLatlng(_bounds._northEast.lat,_bounds._southWest.lat,_bounds._northEast.lng,_bounds._southWest.lng);
+                    map.on('dragstart drag dragend move zoomend  moveend', function() {
+                        var _bounds = map.getBounds();
+                        $label.innerText =
+                            '東北: ('+ _bounds._northEast.lng +','+ _bounds._northEast.lat +')(經, 緯)\n'
+                            + '西南: ('+ _bounds._southWest.lng +','+ _bounds._southWest.lat +')(經, 緯)';
+                            NowLatlng.setLatlng(_bounds._northEast.lat,_bounds._southWest.lat,_bounds._northEast.lng,_bounds._southWest.lng);
+                            // UpdateCanvas();
+                    });
+                    map.on('dragend  zoomend', function() {
+
+                             UpdateCanvas();
+                    });
+                    return $label;
+                },
+
+                onRemove: function(map) {
+                    // Nothing to do here
+                    map.off('zoomend moveend');
+                }
+
+            });
+
+            L.control.nowbounds = function(opts) {
+                return new NowBounds(opts);
+            }
+     var map;
+            map = L.map('map', { zoomControl: false });
+            new L.Control.Zoom({ position: 'topright' }).addTo(map);
+
+               // var sol = L.latLng([ 24.1793364,120.6560195 ]);
+           // L.marker(sol).addTo(map);
+            map.setView([23.6440,120.6844], 8);
+
+
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '<a href=https://www.openstreetmap.org">OpenStreetMap</a>',
+                maxZoom: 18,
+            }).addTo(map);
+
+            L.control.nowbounds({ position: 'bottomleft' }).addTo(map);
+
+
+    var NowActionNarButton="";//目前點到的右側邊按鈕
+
+
+    // page Ready and do
+	document.addEventListener("DOMContentLoaded", function(){
+     initCanvas();
+    ws = new WebSocket("ws://taiwan-live.herokuapp.com/");//WebSocket連線
+    ws.onmessage = function (evt) {
+    Datas = evt.data;
+    rst=loadData(rst,Datas);
+    UpdateCanvas();
+    };
+
+    BindNarItem("btn_tempture","text_tempture");//按鈕掛事件
+    BindNarItem("btn_Air","text_Air");//按鈕掛事件
+
+
+    BindNarItem("btn_DropDown","text_DropDown");//按鈕掛事件
+    //按鈕文字調整位置
+    var NarSideTexts = document.getElementsByClassName("Narbtntext");
+
+    for(var i = 0; i < NarSideTexts.length; i++)
+    {
+    document.getElementsByClassName("Narbtntext")[i].style.top=(i*60+10).toString() +"px";
+    }
+
+
+
+
+
+
+
+
+	});
+
+
+
+function NarItemMouseOver(textid)
+{
+var ThisItemText= document.getElementById(textid);
+ThisItemText.style.backgroundColor ="rgba(68,65,65,1)";
+}
+function NarItemMouseOut(textid)
+{
+    var ThisItemText= document.getElementById(textid);
+ThisItemText.style.backgroundColor = "";
+}
+
+
+function BindNarItem(btnid,textid)
+{
+  //按鈕預設建置
+    var Thisbtn= document.getElementById(btnid);
+
+    Thisbtn.addEventListener("mouseover",function(){//滑鼠移入
+        NarItemMouseOver(textid);
+     });
+
+    Thisbtn.addEventListener("mouseout",function(){//滑鼠移出
+        NarItemMouseOut(textid)});
+
+     Thisbtn.addEventListener("click",function(){//點擊判斷
+        NowActionNarButton=btnid;
+        //Thisbtn.style.border="green";
+        // Thisbtn.style.borderStyle ="solid";
+        // Thisbtn.style.boxShadow =
+        //     "rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,"+
+        //     "rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,"+
+        //     "rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset,"+
+        //     "rgba(0, 0, 0, 0.06) 0px 2px 1px,"+
+        //     "rgba(0, 0, 0, 0.09) 0px 4px 2px,"+
+        //     "rgba(0, 0, 0, 0.09) 0px 8px 4px,"+
+        //     "rgba(0, 0, 0, 0.09) 0px 16px 8px,"+
+        //     "rgba(0, 0, 0, 0.09) 0px 32px 16px;";
+
+Thisbtn.style.boxShadow ="0 0 4px 0 black";
+
+
+    Thisbtn.style.backgroundColor="#d49500";
+    var NarSidebtns = document.getElementsByClassName("Narbtn");
+
+    for(var i = 0; i < NarSidebtns.length; i++)
+    {
+        var btn=document.getElementsByClassName("Narbtn")[i];
+        if (btn.id!=NowActionNarButton) {
+        btn.style.border="";
+        btn.style.borderStyle ="";
+        btn.style.boxShadow ="";
+        btn.style.backgroundColor="";
+        }
+
+    };
+
+     });
+     var Thistext=document.getElementById(textid);
+
+Thistext.addEventListener("click",function(){
+Thisbtn.click();
+});
+
+}
+
+
+function initCanvas()
+{
+
+        var width =  window.innerWidth;
+        var height = window.innerHeight;
+        var can1 = document.getElementById("cns");
+        var ctx1 = can1.getContext("2d");
+        can1.width=window.innerWidth;
+        can1.height=height;
+            var drw1 = new TemperatureMap(ctx1);
+            var  x=0;
+            var y=0;
+            rst = [];
+            rst=loadData(rst,Datas);
+            rst.push({ x:NowLatlng.MinLng , y: NowLatlng.MaxLat, value: 25 });//左上
+            rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MaxLat, value: 18 });//右上
+            rst.push({ x: NowLatlng.MinLng, y: NowLatlng.MinLat, value: 20 });//左下
+            rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MinLat, value: 30 });//右下
+            rst=ConvertToPixel(rst);
+            drw1.setPoints(rst, width, height);
+            // 方法1
+            drw1.drawLow(5, 32, false, function () { // 5 = Number of closer influent points
+                                                    // 8 = Quality parameter [2, 32]
+                                                    // false = clean polygon outside
+                drw1.drawPoints();                  // Callback function (draw points when done)
+            });
+
+//刪除目前點
+ var elements = document.getElementsByClassName("Tempturebutton");
+    while(elements.length > 0){
+        elements[0].removeEventListener("click", testclick);
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+
+
+    //重新新增所有點
+    for (var i = 0; i < rst.length-1; i++) {
+    var px=rst[i].x;
+    var py=rst[i].y;
+
+    var value=rst[i].value;
+
+        if (!(px==0&&py==0)) {
+
+         $("body").append(AppendTemptureButton(py,px,value));
+        }
+
+    }
+}
+
+
+
+
+function ConvertToPixel(rst)
+{
+    var Maxwidth = window.innerWidth;//目前螢幕 寬 像素
+    var Maxheight = window.innerHeight;//目前螢幕 高 像素
+
+
+var rstlength=rst.length;
+//座標轉換
+for (var i = 0; i < rstlength; i++)
+{
+
+var x=0;
+var y=0;
+    //像素x=(最大像素/(最大經度-最小經度))*目前經度與最小值差異 (算出比例後擴增)
+    var Oldx=rst[i].x;
+    var Oldy=rst[i].y;
+    var Oldvalue=rst[i].value;
+
+
+
+    rst[i]={
+     x: ((Maxwidth)/(NowLatlng.MaxLng-NowLatlng.MinLng) ) *(Oldx-NowLatlng.MinLng) ,
+     y:((Maxheight)/(NowLatlng.MaxLat-NowLatlng.MinLat )) *(NowLatlng.MaxLat-Oldy) , value: Oldvalue };
+
+
+}
+ return  rst;
+}
+ function lon2tile(lon,zoom)
+ {
+  return (Math.floor((lon+180)  /  360*Math.pow(2,zoom)));
+   }
+ function lat2tile(lat,zoom)  {
+     var test=1-Math.log(Math.tan(lat*Math.PI/180) + 1);
+
+  return  (1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom);  //????
+
+   }
+//畫面移動時，修改Canvas顯示位置
+function UpdateCanvas()
+{
+
+        var width =  window.innerWidth;
+        var height = window.innerHeight;
+        var can1 = document.getElementById("cns");
+        var ctx1 = can1.getContext("2d");
+        can1.width=width;
+        can1.height=height;
+            var drw1 = new TemperatureMap(ctx1);
+            var  x=0;
+            var y=0;
+            rst = [];
+            rst=loadData(rst,Datas);
+            rst.push({ x:NowLatlng.MinLng , y: NowLatlng.MaxLat, value: 25 });//左上
+            rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MaxLat, value: 25 });//右上
+            rst.push({ x: NowLatlng.MinLng, y: NowLatlng.MinLat, value: 25 });//左下
+            rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MinLat, value: 25 });//右下
+            rst=ConvertToPixel(rst);
+            drw1.setPoints(rst, width, height);
+            drw1.drawLow(5, 32, false, function () { // 5 = Number of closer influent points
+                                                    // 8 = Quality parameter [2, 32]
+                                                    // false = clean polygon outside
+                drw1.drawPoints();
+                            // Callback function (draw points when done)
+            });
+
+
+
+
+//刪除目前點
+ var elements = document.getElementsByClassName("Tempturebutton");
+    while(elements.length > 0){
+        elements[0].removeEventListener("click", testclick);
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+
+
+    //重新新增所有點
+    for (var i = 0; i < rst.length-1; i++) {
+    var px=rst[i].x;
+    var py=rst[i].y;
+    var value=rst[i].value;
+
+        if (!(px=="0"&&py=="0")) {
+
+         $("body").append(AppendTemptureButton(py,px,value));
+        }
+
+    }
+
+}
+
+
+//溫度按鈕
+function AppendTemptureButton(x,y,Tempture)
+{
+
+var  NewElement = document.createElement("div");
+NewElement.style.top = x+"px";
+NewElement.style.left = y+"px";
+NewElement.classList.add("btn_class");
+NewElement.classList.add("Tempturebutton");//辨認為溫度按鈕的class
+NewElement.textContent=Tempture+"°";
+
+NewElement.addEventListener('click', function()
+    {
+testclick(x,y);
+    });
+
+return  NewElement;
+}
+//測試按鈕事件
+function testclick(x,y)
+{
+alert(x+","+y);
+
+}
+
+
+
+function loadData(rst,Datas)
+{
+
+// Datas="{\"temp\": [                                   "+
+
+// "    {"+
+// "      \"coordinates\": ["+
+// "        120.6560195,"+
+// "        24.1793364"+
+// "      ],"+
+// "      \"result\": \"25\","+
+// "      \"phenomenonTime\": \"2021-08-22T08:20:00.000Z\""+
+// "    },"+
+// "    {"+
+// "      \"coordinates\": ["+
+// "        120.226082,"+
+// "        22.934692"+
+// "      ],"+
+// "      \"result\": \"18\","+
+// "      \"phenomenonTime\": \"2021-08-22T09:00:00.000Z\""+
+// "    }"+
+// "  ],"+
+// "  \"H_F10\": ["+
+// "    {"+
+// "      \"coordinates\": ["+
+// "        ["+
+// "          114.356682,"+
+// "          10.37177"+
+// "        ]"+
+// "      ],"+
+// "      \"result\": \"0.600\","+
+// "      \"phenomenonTime\": \"2021-08-22T09:00:00.000Z\""+
+// "    }"+
+// "  ]"+
+// "}";
+
+
+
+var JDatas;
+JDatas=JSON.parse(Datas);
+// alert(Datas);
+if (JDatas!=null) {
+
+    for (var i =0; i <  JDatas.temp.length; i++) {
+    // rst.push({ x: JDatas.temp[i].coordinates[1], y: JDatas.temp[i].coordinates[0], value: JDatas.temp[i].result });
+    rst.push({ x: JDatas.temp[i].coordinates[1], y: JDatas.temp[i].coordinates[0], value: JDatas.temp[i].result });
+}
+}
+
+//資料輸入點
+
+
+return  rst;
+
+}
+
+
+
+   </script>

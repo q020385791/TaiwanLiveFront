@@ -128,16 +128,17 @@
 
         .Tempturebutton
         {
-            /*background-color: rgb(216, 75, 1);*/
+            background-color: rgb(216, 75, 1);
             width: 50px;
             height:20px;;
-            position:fixed;
-            z-index: 100;
+            position:relative;
             border-radius:1em;
             cursor: pointer;
             text-align: center;
-            color: white;
+            color: black;
+            font-size: 30px;
         }
+
 
      .leaflet-control-zoom-in, .leaflet-control-zoom-out {
             background-color: rgba(68,65,65) !important;
@@ -156,7 +157,8 @@
 </head>
 <body>
 <canvas id='cns' style="z-index:100; position: fixed; width:100%;height: 100%;pointer-events:none;"></canvas>
-<div id="map" style="z-index: 99"></div>
+<div id="map" style="z-index: 99 ;position: relative;"></div>
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
 
 <!-- NavBar外觀 -->
@@ -178,7 +180,7 @@
 
 <div>
  <!-- 按鈕旁文字 -->
-    <div id="text_Air" class="Narbtntext" >
+    <div id="text_Air" class="Narbtntext">
     空氣
     </div>
     <!-- 按鈕旁文字 -->
@@ -274,10 +276,11 @@
                             NowLatlng.setLatlng(_bounds._northEast.lat,_bounds._southWest.lat,_bounds._northEast.lng,_bounds._southWest.lng);
                             // UpdateCanvas();
                     });
-                    map.on('dragend  zoomend', function() {
+                    map.on('dragend zoomend', function() {
 
                              UpdateCanvas();
                     });
+
                     return $label;
                 },
 
@@ -315,7 +318,7 @@
     // page Ready and do
 	document.addEventListener("DOMContentLoaded", function(){
      initCanvas();
-    ws = new WebSocket("ws://taiwan-live.herokuapp.com/");//WebSocket連線
+    ws = new WebSocket("wss://taiwan-live.herokuapp.com/");//WebSocket連線
     ws.onmessage = function (evt) {
     Datas = evt.data;
     rst=loadData(rst,Datas);
@@ -334,14 +337,6 @@
     {
     document.getElementsByClassName("Narbtntext")[i].style.top=(i*60+10).toString() +"px";
     }
-
-
-
-
-
-
-
-
 	});
 
 
@@ -372,8 +367,8 @@ function BindNarItem(btnid,textid)
 
      Thisbtn.addEventListener("click",function(){//點擊判斷
         NowActionNarButton=btnid;
-        //Thisbtn.style.border="green";
-        // Thisbtn.style.borderStyle ="solid";
+        Thisbtn.style.border="green";
+        Thisbtn.style.borderStyle ="solid";
         // Thisbtn.style.boxShadow =
         //     "rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,"+
         //     "rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,"+
@@ -414,7 +409,6 @@ Thisbtn.click();
 
 function initCanvas()
 {
-
         var width =  window.innerWidth;
         var height = window.innerHeight;
         var can1 = document.getElementById("cns");
@@ -426,19 +420,11 @@ function initCanvas()
             var y=0;
             rst = [];
             rst=loadData(rst,Datas);
+            var _bounds = map.getBounds();
             rst.push({ x:NowLatlng.MinLng , y: NowLatlng.MaxLat, value: 25 });//左上
             rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MaxLat, value: 18 });//右上
             rst.push({ x: NowLatlng.MinLng, y: NowLatlng.MinLat, value: 20 });//左下
             rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MinLat, value: 30 });//右下
-            rst=ConvertToPixel(rst);
-            drw1.setPoints(rst, width, height);
-            // 方法1
-            drw1.drawLow(5, 32, false, function () { // 5 = Number of closer influent points
-                                                    // 8 = Quality parameter [2, 32]
-                                                    // false = clean polygon outside
-                drw1.drawPoints();                  // Callback function (draw points when done)
-            });
-
 //刪除目前點
  var elements = document.getElementsByClassName("Tempturebutton");
     while(elements.length > 0){
@@ -457,20 +443,30 @@ function initCanvas()
         if (!(px==0&&py==0)) {
 
          $("body").append(AppendTemptureButton(py,px,value));
+
+         new L.Marker([py, px], {
+    icon: new L.DivIcon({
+        className: 'Tempturebutton',
+        html:  '<span>'+value+'°C</span>'
+                        })
+            }).addTo(map);
         }
-
     }
+            rst=ConvertToPixel(rst);
+            drw1.setPoints(rst, width, height);
+            // 方法1
+            drw1.drawLow(5, 32, false, function () { // 5 = Number of closer influent points
+                                                    // 8 = Quality parameter [2, 32]
+                                                    // false = clean polygon outside
+                drw1.drawPoints();                  // Callback function (draw points when done)
+            });
 }
-
-
 
 
 function ConvertToPixel(rst)
 {
     var Maxwidth = window.innerWidth;//目前螢幕 寬 像素
     var Maxheight = window.innerHeight;//目前螢幕 高 像素
-
-
 var rstlength=rst.length;
 //座標轉換
 for (var i = 0; i < rstlength; i++)
@@ -485,7 +481,7 @@ var y=0;
 
 
 
-    rst[i]={
+     rst[i]={
      x: ((Maxwidth)/(NowLatlng.MaxLng-NowLatlng.MinLng) ) *(Oldx-NowLatlng.MinLng) ,
      y:((Maxheight)/(NowLatlng.MaxLat-NowLatlng.MinLat )) *(NowLatlng.MaxLat-Oldy) , value: Oldvalue };
 
@@ -522,16 +518,6 @@ function UpdateCanvas()
             rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MaxLat, value: 25 });//右上
             rst.push({ x: NowLatlng.MinLng, y: NowLatlng.MinLat, value: 25 });//左下
             rst.push({ x: NowLatlng.MaxLng, y: NowLatlng.MinLat, value: 25 });//右下
-            rst=ConvertToPixel(rst);
-            drw1.setPoints(rst, width, height);
-            drw1.drawLow(5, 32, false, function () { // 5 = Number of closer influent points
-                                                    // 8 = Quality parameter [2, 32]
-                                                    // false = clean polygon outside
-                drw1.drawPoints();
-                            // Callback function (draw points when done)
-            });
-
-
 
 
 //刪除目前點
@@ -540,8 +526,6 @@ function UpdateCanvas()
         elements[0].removeEventListener("click", testclick);
         elements[0].parentNode.removeChild(elements[0]);
     }
-
-
     //重新新增所有點
     for (var i = 0; i < rst.length-1; i++) {
     var px=rst[i].x;
@@ -551,12 +535,26 @@ function UpdateCanvas()
         if (!(px=="0"&&py=="0")) {
 
          $("body").append(AppendTemptureButton(py,px,value));
-        }
 
+new L.Marker([py, px], {
+    icon: new L.DivIcon({
+        className: 'Tempturebutton',
+        html:
+                '<span>'+value+'°C</span>'
+                        })
+            }).addTo(map);
+        }
     }
+            rst=ConvertToPixel(rst);
+            drw1.setPoints(rst, width, height);
+            drw1.drawLow(5, 32, false, function () { // 5 = Number of closer influent points
+                                                    // 8 = Quality parameter [2, 32]
+                                                    // false = clean polygon outside
+                drw1.drawPoints();
+                            // Callback function (draw points when done)
+            });
 
 }
-
 
 //溫度按鈕
 function AppendTemptureButton(x,y,Tempture)
@@ -588,49 +586,56 @@ alert(x+","+y);
 function loadData(rst,Datas)
 {
 
-// Datas="{\"temp\": [                                   "+
+Datas="{\"temp\": [                                   "+
 
-// "    {"+
-// "      \"coordinates\": ["+
-// "        120.6560195,"+
-// "        24.1793364"+
-// "      ],"+
-// "      \"result\": \"25\","+
-// "      \"phenomenonTime\": \"2021-08-22T08:20:00.000Z\""+
-// "    },"+
-// "    {"+
-// "      \"coordinates\": ["+
-// "        120.226082,"+
-// "        22.934692"+
-// "      ],"+
-// "      \"result\": \"18\","+
-// "      \"phenomenonTime\": \"2021-08-22T09:00:00.000Z\""+
-// "    }"+
-// "  ],"+
-// "  \"H_F10\": ["+
-// "    {"+
-// "      \"coordinates\": ["+
-// "        ["+
-// "          114.356682,"+
-// "          10.37177"+
-// "        ]"+
-// "      ],"+
-// "      \"result\": \"0.600\","+
-// "      \"phenomenonTime\": \"2021-08-22T09:00:00.000Z\""+
-// "    }"+
-// "  ]"+
-// "}";
+"    {"+
+"      \"coordinates\": ["+
+"        120.6560195,"+
+"        24.1793364"+
+"      ],"+
+"      \"result\": \"40\","+
+"      \"phenomenonTime\": \"2021-08-22T08:20:00.000Z\""+
+"    },"+
+"    {"+
+"      \"coordinates\": ["+
+"        120.226082,"+
+"        22.934692"+
+"      ],"+
+"      \"result\": \"18\","+
+"      \"phenomenonTime\": \"2021-08-22T09:00:00.000Z\""+
+"    }"+
+"  ],"+
+"  \"H_F10\": ["+
+"    {"+
+"      \"coordinates\": ["+
+"        ["+
+"          114.356682,"+
+"          10.37177"+
+"        ]"+
+"      ],"+
+"      \"result\": \"0.600\","+
+"      \"phenomenonTime\": \"2021-08-22T09:00:00.000Z\""+
+"    }"+
+"  ]"+
+"}";
 
 
 
 var JDatas;
+if (Datas!=null)
+{
+// Datas="{\"temp\":"+JSON.stringify(Datas)+"}";
 JDatas=JSON.parse(Datas);
+}
+
+
+
 // alert(Datas);
 if (JDatas!=null) {
 
     for (var i =0; i <  JDatas.temp.length; i++) {
+     rst.push({ x: JDatas.temp[i].coordinates[0], y: JDatas.temp[i].coordinates[1], value: JDatas.temp[i].result });
     // rst.push({ x: JDatas.temp[i].coordinates[1], y: JDatas.temp[i].coordinates[0], value: JDatas.temp[i].result });
-    rst.push({ x: JDatas.temp[i].coordinates[1], y: JDatas.temp[i].coordinates[0], value: JDatas.temp[i].result });
 }
 }
 
@@ -640,7 +645,4 @@ if (JDatas!=null) {
 return  rst;
 
 }
-
-
-
    </script>

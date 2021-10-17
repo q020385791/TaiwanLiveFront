@@ -161,6 +161,80 @@ TemperatureMap.prototype.getColor = function (levels, value) {
     // return TemperatureMap.hslToRgb(tmp, 1, 0.5);
 };
 
+
+
+TemperatureMap.prototype.getColor = function (levels, value) {
+
+    var val = value,
+        tmp = 0,
+        lim = 0.55,
+        min = -20,
+        max = 40,
+        dif = max - min,
+        lvs = 25,
+        result = [];
+
+    if (val < min) {
+        val = min;
+    }
+    if (val > max) {
+        val = max;
+    }
+
+    val = (val / 5).toFixed(0) * 5;
+    switch (val) {
+        case -20:
+            result = [149, 137, 211];
+            break;
+        case -15:
+            result = [150, 209, 216];
+            break;
+        case -10:
+            result = [129, 204, 197];
+            break;
+        case -5:
+            result = [103, 180, 186];
+            break;
+        case 0:
+            result = [95, 143, 197];
+            break;
+        case 5:
+            result = [80, 140, 62];
+            break;
+        case 10:
+            result = [121, 146, 28];
+            break;
+        case 15:
+            result = [171, 161, 14];
+            break;
+        case 20:
+            result = [223, 177, 6];
+            break;
+        case 25:
+            result = [243, 150, 6];
+            break;
+        case 30:
+            result = [236, 95, 21];
+            break;
+        case 35:
+            result = [190, 65, 18];
+            break;
+        case 40:
+            result = [138, 43, 10];
+            break;
+    }
+
+    return result;
+    // tmp = 1 - (1 - lim) - (((val - min) * lim) / dif);
+    // // tmp = 1 - (((val - min) / dif) + 1/6);
+
+    // if (levels) {
+    //     tmp = Math.round(tmp * lvs) / lvs;
+    // }
+
+    // return TemperatureMap.hslToRgb(tmp, 1, 0.5);
+};
+
 TemperatureMap.prototype.getPointValue = function (limit, point) {
 
     var counter = 0,
@@ -401,27 +475,27 @@ TemperatureMap.prototype.drawPoints = function (callback) {
             idx = 0,
             pnt;
 
-        for (idx = 0; idx < self.points.length; idx = idx + 1) {
-            pnt = self.points[idx];
+        // for (idx = 0; idx < self.points.length; idx = idx + 1) {
+        //     pnt = self.points[idx];
 
-            // col = self.getColor(false, pnt.value);
+        //     col = self.getColor(false, pnt.value);
 
-            // ctx.fillStyle = 'rgba(255, 255, 255, 128)';
-            // ctx.beginPath();
-            // ctx.arc(pnt.x, pnt.y, 8, 0, PI2, false);
-            // ctx.fill();
+        //     ctx.fillStyle = 'rgba(255, 255, 255, 128)';
+        //     ctx.beginPath();
+        //     ctx.arc(pnt.x, pnt.y, 8, 0, PI2, false);
+        //     ctx.fill();
 
-            // ctx.lineWidth = 1;
-            // ctx.strokeStyle = 'rgb(' + col[0] + ', ' + col[1] + ', ' + col[2] + ')';
-            // ctx.beginPath();
-            // ctx.arc(pnt.x, pnt.y, 8, 0, PI2, false);
-            // ctx.stroke();
+        //     ctx.lineWidth = 1;
+        //     ctx.strokeStyle = 'rgb(' + col[0] + ', ' + col[1] + ', ' + col[2] + ')';
+        //     ctx.beginPath();
+        //     ctx.arc(pnt.x, pnt.y, 8, 0, PI2, false);
+        //     ctx.stroke();
 
-            // ctx.textAlign = 'center';
-            // ctx.textBaseline = 'middle';
-            // ctx.fillStyle = 'rgb(0, 0, 0)';
-            // ctx.fillText(Math.round(pnt.value), pnt.x, pnt.y);
-        }
+        //     ctx.textAlign = 'center';
+        //     ctx.textBaseline = 'middle';
+        //     ctx.fillStyle = 'rgb(0, 0, 0)';
+        //     ctx.fillText(Math.round(pnt.value), pnt.x, pnt.y);
+        // }
 
         if (typeof callback === 'function') {
             callback();
